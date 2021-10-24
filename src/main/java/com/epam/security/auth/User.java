@@ -15,6 +15,8 @@ public class User {
     private String username;
     @Column(name = "PASSWORD")
     private String password;
+    @Column(name = "BLOCKED")
+    private boolean blocked;
 
     public long getId() {
         return id;
@@ -38,5 +40,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

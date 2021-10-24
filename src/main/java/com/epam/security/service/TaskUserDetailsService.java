@@ -1,8 +1,8 @@
 package com.epam.security.service;
 
 import com.epam.security.auth.*;
+import com.epam.security.bruteforce.LoginAttemptService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +13,13 @@ public class TaskUserDetailsService implements org.springframework.security.core
 
     private final UserRepository userRepository;
     private final AuthGroupRepository authGroupRepository;
+    private final LoginAttemptService loginAttemptService;
 
-    public TaskUserDetailsService(UserRepository userRepository, AuthGroupRepository authGroupRepository) {
+    public TaskUserDetailsService(UserRepository userRepository, AuthGroupRepository authGroupRepository, LoginAttemptService loginAttemptService) {
         super();
         this.userRepository = userRepository;
         this.authGroupRepository = authGroupRepository;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Override
@@ -26,6 +28,10 @@ public class TaskUserDetailsService implements org.springframework.security.core
         if (null == user) {
             throw new UsernameNotFoundException("cannot find username: " + username);
         }
+        if (user.isBlocked()) {
+            throw new RuntimeException("blocked");
+        }
+
         List<AuthGroup> authGroups = this.authGroupRepository.findByUsername(username);
         return new UserPrincipal(user, authGroups);
     }

@@ -1,5 +1,6 @@
 package com.epam.security.config;
 
+import com.epam.security.bruteforce.CustomAuthenticationFailureHandler;
 import com.epam.security.service.TaskUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
@@ -22,6 +24,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter{
     @Autowired
     private TaskUserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider(){
@@ -57,6 +62,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .and()
                 .formLogin()
                 .loginPage("/login").permitAll()
+                .failureHandler(authenticationFailureHandler)
                 .and()
                 .logout().invalidateHttpSession(true)
                 .clearAuthentication(true)
